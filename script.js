@@ -41,7 +41,7 @@ const translatex = "translate(" + ((xmax - xlabel.node().getBBox().width) / 2) +
 xlabel.attr("transform", translatex);
 
 
-const data = [10, 20, 30, 40, 50];
+const data = [10, 60, 30, 40, 50];
 
 const bars = chart.append("g");
 
@@ -51,11 +51,14 @@ function calc(n) {
 	return ((n + 1) * wb / 2) + n * wb;
 }
 
+const percentage = (ymax - 2 * margin) / 100;
+const max = d3.max(data);
+
 bars.selectAll("rect")
 	.data(data)
 	.enter()
 	.append("rect")
 	.attr("width", wb)
-	.attr("height", 100)
-	.attr("stroke", "green")
-	.attr("transform", function(a, idx) { return "translate(" + calc(idx) + ", " + (ymax - 100) + ")"});
+	.attr("height", a => (a * 100 / max) * percentage)
+	.attr("fill", "green")
+	.attr("transform", function(a, idx) { return "translate(" + calc(idx) + ", " + (ymax - margin - (a * 100 / max) * percentage) + ")"});
