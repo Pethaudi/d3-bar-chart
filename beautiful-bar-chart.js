@@ -4,7 +4,9 @@ const xmax = 2000;
 const margin = calculateMargin();
 const axisWidth = 10;
 const axisColor = "#cacaca";
-createAxis(["all the bars", "value of the bars"], 10);
+const ticksWidth = axisWidth / 2;
+const ticksLength = 50;
+createAxis(["all the bars", "value of the bars"], 2, ["1", "2"]);
 
 function calculateMargin() {
     const text = chart.append("text")
@@ -63,23 +65,33 @@ function createAxis(labels, ticks, dataLabels) {
     }
 
     const ticksContainer = axis.append("g").attr("id", "ticks");
-    ticksContainer.selectAll("line")
+
+    ticksContainer.selectAll("svg")
         .data(arr)
         .enter()
+        .append("svg")
+        .attr("width", margin + (ticksLength / 2))
+        .attr("height", ticksLength)
+        .attr("x", 0)
+        .attr("y", (elem, idx) => {
+            const lengthOfAxis = ymax - 2 * margin;
+            return (lengthOfAxis / ticks) * idx + margin;
+        })
         .append("line")
-        .attr("x1", "0")
-        .attr("x2", "50")
-        .attr("y1", "0")
-        .attr("y2", "0")
+        .attr("x1", margin - (ticksLength / 2))
+        .attr("y1", 0)
+        .attr("x2", margin + (ticksLength / 2))
+        .attr("y2", 0)
         .attr("stroke", axisColor)
-        .attr("stroke-width", axisWidth / 2)
-        .attr("transform", data => {
-            const x = margin - (50 / 2);
-            const l = ymax - 2 * margin;
-            const y = (l / ticks) * data + margin;
+        .attr("stroke-width", axisWidth);
 
-            return "translate(" + x + ", " + y + ")";
-        });
+    ticksContainer.selectAll("svg")
+        .append("text")
+        .text((elem, idx) => dataLabels[idx])
+        .attr("x", margin - (ticksLength / 2))
+        .attr("y", ticksLength / 2)
+        .attr("font-size", "2em")
+        .attr("text-anchor", "end");
 }
 
 function createLine(elem, x1, y1, x2, y2) {
